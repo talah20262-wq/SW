@@ -2,50 +2,33 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>أنشئ متجرك | منصة طلة</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gradient-to-br from-blue-700 to-indigo-900 min-h-screen flex items-center justify-center p-6">
-    <div class="bg-white rounded-3xl p-10 shadow-2xl w-full max-w-lg">
-        <h2 class="text-3xl font-black text-center mb-2">أنشئ متجرك الآن 🚀</h2>
-        <p class="text-gray-500 text-center mb-8">ابدأ تجارتك الإلكترونية مع طلة في دقائق</p>
-        
-        <div class="space-y-5">
-            <div>
-                <label class="block font-bold mb-2">اسم المتجر</label>
-                <input type="text" id="sName" placeholder="مثلاً: ليالي كوين" class="w-full p-4 border-2 border-gray-100 rounded-xl focus:border-blue-500 outline-none transition">
-            </div>
-            <div>
-                <label class="block font-bold mb-2">الرابط المفضل (Subdomain)</label>
-                <div class="flex items-center border-2 border-gray-100 rounded-xl focus-within:border-blue-500 overflow-hidden">
-                    <input type="text" id="sSub" placeholder="my-store" class="w-full p-4 outline-none">
-                    <span class="p-4 bg-gray-50 font-bold text-gray-400 border-r">.talla.com</span>
-                </div>
-            </div>
-            <button onclick="createMyStore()" class="w-full bg-blue-600 text-white py-5 rounded-2xl font-black text-xl hover:bg-blue-700 shadow-lg transition-all">
-                إنشاء المتجر وحجز الرابط ✨
-            </button>
+<body class="bg-blue-900 min-h-screen flex items-center justify-center p-4">
+    <div class="bg-white p-8 rounded-3xl shadow-2xl w-full max-w-md">
+        <h1 class="text-2xl font-bold text-center mb-6">أنشئ متجرك على طلة 🚀</h1>
+        <input type="text" id="sName" placeholder="اسم المتجر" class="w-full p-4 border rounded-xl mb-4 outline-none">
+        <div class="flex items-center border rounded-xl overflow-hidden mb-6">
+            <input type="text" id="sSub" placeholder="my-store" class="w-full p-4 outline-none">
+            <span class="p-4 bg-gray-100 text-gray-400">.talla.com</span>
         </div>
+        <button onclick="makeStore()" class="w-full bg-blue-600 text-white py-4 rounded-xl font-bold text-lg hover:bg-blue-700 transition">
+            ابدأ الآن ✨
+        </button>
     </div>
-
     <script>
-        async function createMyStore() {
-            const data = {
-                storeName: document.getElementById('sName').value,
-                subdomain: document.getElementById('sSub').value,
-                ownerEmail: "user@example.com"
-            };
+        async function makeStore() {
             const res = await fetch('http://localhost:3000/api/stores/create', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(data)
+                body: JSON.stringify({
+                    storeName: document.getElementById('sName').value,
+                    subdomain: document.getElementById('sSub').value
+                })
             });
-            const result = await res.json();
-            if(result.success) {
-                alert("مبروك! متجرك جاهز على: " + result.url);
-            } else {
-                alert("خطأ: " + result.message);
-            }
+            const data = await res.json();
+            if(data.success) alert("تم بنجاح! رابطك: " + data.url);
+            else alert("عذراً، الرابط محجوز");
         }
     </script>
 </body>
