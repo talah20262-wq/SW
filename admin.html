@@ -2,61 +2,44 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>إدارة المنصة | المالك</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-slate-900 text-white min-h-screen p-8">
-    <header class="flex justify-between items-center mb-10 border-b border-slate-700 pb-6">
-        <h1 class="text-3xl font-extrabold text-blue-400 italic">TALLA ADMIN SYSTEM</h1>
-        <div class="flex gap-4 items-center">
-            <span class="bg-red-600 px-4 py-1 rounded-full text-xs font-bold animate-pulse">وضع المسؤول</span>
-            <span class="text-slate-400 text-sm">كود الوصول: 22422</span>
+<body class="bg-slate-900 text-white p-6">
+    <div class="max-w-4xl mx-auto">
+        <div class="flex justify-between items-center mb-10">
+            <h1 class="text-2xl font-bold text-blue-400">إدارة منصة طلة</h1>
+            <span class="bg-red-600 px-4 py-1 rounded text-sm">كود: 22422</span>
         </div>
-    </header>
-
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-        <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700">
-            <h3 class="text-slate-400">إجمالي المتاجر</h3>
-            <p id="totalStores" class="text-4xl font-black mt-2">0</p>
+        <div class="bg-slate-800 rounded-xl overflow-hidden shadow-lg">
+            <table class="w-full text-right">
+                <thead class="bg-slate-700">
+                    <tr>
+                        <th class="p-4">المتجر</th>
+                        <th class="p-4">الرابط</th>
+                        <th class="p-4">الحالة</th>
+                        <th class="p-4">تحكم</th>
+                    </tr>
+                </thead>
+                <tbody id="storesTable"></tbody>
+            </table>
         </div>
     </div>
-
-    <div class="bg-slate-800 rounded-2xl overflow-hidden border border-slate-700">
-        <table class="w-full text-right">
-            <thead class="bg-slate-700 text-slate-300">
-                <tr>
-                    <th class="p-5">اسم المتجر</th>
-                    <th class="p-5">الرابط الفرعي</th>
-                    <th class="p-5">خطة العميل</th>
-                    <th class="p-5">الإجراءات</th>
-                </tr>
-            </thead>
-            <tbody id="storesTable">
-                <!-- يتم التحميل برمجياً -->
-            </tbody>
-        </table>
-    </div>
-
     <script>
-        async function loadAdminData() {
-            const res = await fetch('http://localhost:3000/api/admin/all-stores', {
-                headers: {'Authorization': '22422'} //
+        async function getStores() {
+            const res = await fetch('http://localhost:3000/api/admin/stores', {
+                headers: {'Authorization': '22422'}
             });
             const stores = await res.json();
-            document.getElementById('totalStores').innerText = stores.length;
             document.getElementById('storesTable').innerHTML = stores.map(s => `
-                <tr class="border-b border-slate-700 hover:bg-slate-750 transition">
-                    <td class="p-5 font-bold">${s.storeName} ${s.isVerified ? '✅' : ''}</td>
-                    <td class="p-5 text-blue-400 font-mono">${s.subdomain}.talla.com</td>
-                    <td class="p-5 italic">${s.plan}</td>
-                    <td class="p-5">
-                        <button class="bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded text-sm ml-2">توثيق ✔</button>
-                        <button class="bg-red-600 hover:bg-red-700 px-3 py-1 rounded text-sm">حذف 🗑</button>
-                    </td>
+                <tr class="border-b border-slate-700">
+                    <td class="p-4 font-bold">${s.storeName} ${s.isVerified ? '✅' : ''}</td>
+                    <td class="p-4 text-blue-300">${s.subdomain}.talla.com</td>
+                    <td class="p-4">${s.plan}</td>
+                    <td class="p-4"><button class="bg-blue-600 px-3 py-1 rounded text-xs">توثيق</button></td>
                 </tr>
             `).join('');
         }
-        window.onload = loadAdminData;
+        window.onload = getStores;
     </script>
 </body>
 </html>
