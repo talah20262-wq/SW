@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>أنشئ متجرك | منصة طلة</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-br from-blue-700 to-indigo-900 min-h-screen flex items-center justify-center p-6">
+    <div class="bg-white rounded-3xl p-10 shadow-2xl w-full max-w-lg">
+        <h2 class="text-3xl font-black text-center mb-2">أنشئ متجرك الآن 🚀</h2>
+        <p class="text-gray-500 text-center mb-8">ابدأ تجارتك الإلكترونية مع طلة في دقائق</p>
+        
+        <div class="space-y-5">
+            <div>
+                <label class="block font-bold mb-2">اسم المتجر</label>
+                <input type="text" id="sName" placeholder="مثلاً: ليالي كوين" class="w-full p-4 border-2 border-gray-100 rounded-xl focus:border-blue-500 outline-none transition">
+            </div>
+            <div>
+                <label class="block font-bold mb-2">الرابط المفضل (Subdomain)</label>
+                <div class="flex items-center border-2 border-gray-100 rounded-xl focus-within:border-blue-500 overflow-hidden">
+                    <input type="text" id="sSub" placeholder="my-store" class="w-full p-4 outline-none">
+                    <span class="p-4 bg-gray-50 font-bold text-gray-400 border-r">.talla.com</span>
+                </div>
+            </div>
+            <button onclick="createMyStore()" class="w-full bg-blue-600 text-white py-5 rounded-2xl font-black text-xl hover:bg-blue-700 shadow-lg transition-all">
+                إنشاء المتجر وحجز الرابط ✨
+            </button>
+        </div>
+    </div>
+
+    <script>
+        async function createMyStore() {
+            const data = {
+                storeName: document.getElementById('sName').value,
+                subdomain: document.getElementById('sSub').value,
+                ownerEmail: "user@example.com"
+            };
+            const res = await fetch('http://localhost:3000/api/stores/create', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(data)
+            });
+            const result = await res.json();
+            if(result.success) {
+                alert("مبروك! متجرك جاهز على: " + result.url);
+            } else {
+                alert("خطأ: " + result.message);
+            }
+        }
+    </script>
+</body>
+</html>
