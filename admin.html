@@ -2,67 +2,61 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>إدارة منصة طلة</title>
+    <title>إدارة المنصة | المالك</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-slate-50">
-    <nav class="bg-indigo-900 text-white p-5 flex justify-between shadow-xl">
-        <h1 class="text-2xl font-bold italic">TALLA ADMIN</h1>
-        <div class="flex items-center gap-4">
-            <span class="bg-red-600 px-3 py-1 rounded-full text-xs">Admin Mode</span>
-            <button onclick="logout()" class="text-sm underline">خروج</button>
+<body class="bg-slate-900 text-white min-h-screen p-8">
+    <header class="flex justify-between items-center mb-10 border-b border-slate-700 pb-6">
+        <h1 class="text-3xl font-extrabold text-blue-400 italic">TALLA ADMIN SYSTEM</h1>
+        <div class="flex gap-4 items-center">
+            <span class="bg-red-600 px-4 py-1 rounded-full text-xs font-bold animate-pulse">وضع المسؤول</span>
+            <span class="text-slate-400 text-sm">كود الوصول: 22422</span>
         </div>
-    </nav>
+    </header>
 
-    <main class="p-10">
-        <div class="flex justify-between items-center mb-8">
-            <h2 class="text-3xl font-extrabold text-slate-800">إدارة المتاجر المباشرة</h2>
-            <div class="text-slate-500">كود الدخول النشط: <span class="font-mono">22422</span></div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+        <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700">
+            <h3 class="text-slate-400">إجمالي المتاجر</h3>
+            <p id="totalStores" class="text-4xl font-black mt-2">0</p>
         </div>
+    </div>
 
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-            <table class="w-full text-right">
-                <thead class="bg-slate-100 border-b">
-                    <tr>
-                        <th class="p-4">اسم المتجر</th>
-                        <th class="p-4">الرابط</th>
-                        <th class="p-4">الخطة</th>
-                        <th class="p-4">الحالة</th>
-                        <th class="p-4">إجراءات التحكم</th>
-                    </tr>
-                </thead>
-                <tbody id="storeList">
-                    <!-- البيانات بتيجي من السيرفر هنا -->
-                </tbody>
-            </table>
-        </div>
-    </main>
+    <div class="bg-slate-800 rounded-2xl overflow-hidden border border-slate-700">
+        <table class="w-full text-right">
+            <thead class="bg-slate-700 text-slate-300">
+                <tr>
+                    <th class="p-5">اسم المتجر</th>
+                    <th class="p-5">الرابط الفرعي</th>
+                    <th class="p-5">خطة العميل</th>
+                    <th class="p-5">الإجراءات</th>
+                </tr>
+            </thead>
+            <tbody id="storesTable">
+                <!-- يتم التحميل برمجياً -->
+            </tbody>
+        </table>
+    </div>
 
     <script>
-        async function loadStores() {
-            const response = await fetch('http://localhost:3000/api/admin/stores', {
-                headers: { 'Authorization': '22422' }
+        async function loadAdminData() {
+            const res = await fetch('http://localhost:3000/api/admin/all-stores', {
+                headers: {'Authorization': '22422'} //
             });
-            const stores = await response.json();
-            const list = document.getElementById('storeList');
-            list.innerHTML = stores.map(store => `
-                <tr class="border-b hover:bg-slate-50 transition">
-                    <td class="p-4 font-bold">${store.storeName} ${store.isVerified ? '✅' : ''}</td>
-                    <td class="p-4 text-blue-600 font-mono">${store.subdomain}.talla.com</td>
-                    <td class="p-4">
-                        <span class="${store.plan === 'VIP' ? 'bg-amber-100 text-amber-700' : 'bg-slate-100 text-slate-600'} px-2 py-1 rounded text-xs font-bold">
-                            ${store.plan}
-                        </span>
-                    </td>
-                    <td class="p-4 font-semibold ${store.status === 'Active' ? 'text-green-600' : 'text-red-600'}">${store.status}</td>
-                    <td class="p-4 flex gap-2">
-                        <button onclick="verify('${store._id}')" class="bg-indigo-600 text-white px-3 py-1 rounded-lg text-sm">توثيق</button>
-                        <button onclick="deleteStore('${store._id}')" class="bg-rose-100 text-rose-600 px-3 py-1 rounded-lg text-sm">حذف</button>
+            const stores = await res.json();
+            document.getElementById('totalStores').innerText = stores.length;
+            document.getElementById('storesTable').innerHTML = stores.map(s => `
+                <tr class="border-b border-slate-700 hover:bg-slate-750 transition">
+                    <td class="p-5 font-bold">${s.storeName} ${s.isVerified ? '✅' : ''}</td>
+                    <td class="p-5 text-blue-400 font-mono">${s.subdomain}.talla.com</td>
+                    <td class="p-5 italic">${s.plan}</td>
+                    <td class="p-5">
+                        <button class="bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded text-sm ml-2">توثيق ✔</button>
+                        <button class="bg-red-600 hover:bg-red-700 px-3 py-1 rounded text-sm">حذف 🗑</button>
                     </td>
                 </tr>
             `).join('');
         }
-        window.onload = loadStores;
+        window.onload = loadAdminData;
     </script>
 </body>
 </html>
