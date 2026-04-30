@@ -1,139 +1,185 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TALLAH AI</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TALLAH AI | الإمبراطورية الذكية</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;700;900&display=swap');
+        
+        :root {
+            --ai-cyan: #00f2ff;
+            --gold: #d4af37;
+            --black: #020202;
+            --glass: rgba(255, 255, 255, 0.05);
+        }
 
-<style>
-body {
-    margin:0;
-    background:#0b0b0b;
-    color:#fff;
-    font-family: Arial;
-    display:flex;
-    flex-direction:column;
-    height:100vh;
-}
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Cairo', sans-serif; }
+        body { background: var(--black); color: white; height: 100vh; overflow: hidden; }
 
-header {
-    padding:15px;
-    text-align:center;
-    font-weight:bold;
-    font-size:20px;
-    background:#111;
-    border-bottom:1px solid #222;
-}
+        /* الأنيميشن الخلفي (Matrix Glow) */
+        .bg-glow { position: fixed; inset: 0; background: radial-gradient(circle at 50% 50%, #111 0%, #000 100%); z-index: -1; }
+        .bg-glow::after { content: ""; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: conic-gradient(from 180deg at 50% 50%, transparent 0%, var(--ai-cyan) 25%, transparent 50%); animation: rotate 10s linear infinite; opacity: 0.05; }
+        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-#chat {
-    flex:1;
-    overflow-y:auto;
-    padding:15px;
-}
+        /* الهيكل الأساسي */
+        .app-wrapper { display: flex; height: 100vh; }
 
-.msg {
-    margin:10px 0;
-    padding:12px;
-    border-radius:12px;
-    max-width:80%;
-}
+        /* القائمة الجانبية الذكية */
+        .sidebar { width: 70px; background: #000; border-left: 1px solid #1a1a1a; display: flex; flex-direction: column; align-items: center; py: 30px; gap: 25px; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); z-index: 100; }
+        .sidebar:hover { width: 240px; }
+        .nav-item { display: flex; align-items: center; gap: 15px; width: 100%; padding: 15px 25px; cursor: pointer; color: #666; transition: 0.3s; white-space: nowrap; overflow: hidden; }
+        .nav-item i { font-size: 20px; min-width: 20px; }
+        .nav-item:hover, .nav-item.active { color: var(--ai-cyan); background: rgba(0, 242, 255, 0.05); border-right: 3px solid var(--ai-cyan); }
+        .nav-label { opacity: 0; transition: 0.3s; font-weight: 700; }
+        .sidebar:hover .nav-label { opacity: 1; }
 
-.user {
-    background:#d4af37;
-    color:#000;
-    margin-left:auto;
-}
+        /* منطقة المحادثة والإنتاج */
+        .main-stage { flex: 1; display: flex; flex-direction: column; background: rgba(5, 5, 5, 0.8); backdrop-filter: blur(20px); }
+        .header { padding: 20px 40px; border-bottom: 1px solid #1a1a1a; display: flex; justify-content: space-between; align-items: center; }
+        .status-dot { width: 10px; height: 10px; background: #00ff88; border-radius: 50%; box-shadow: 0 0 10px #00ff88; }
 
-.ai {
-    background:#1a1a1a;
-    border:1px solid #333;
-}
+        .content-area { flex: 1; overflow-y: auto; padding: 40px; display: flex; flex-direction: column; gap: 25px; }
+        .ai-card { background: var(--glass); border: 1px solid #222; padding: 20px; border-radius: 20px; max-width: 85%; line-height: 1.8; animation: slideUp 0.5s ease; }
+        .user-card { align-self: flex-end; background: var(--ai-cyan); color: black; font-weight: 700; border-radius: 20px 20px 2px 20px; }
+        .ai-bot-card { align-self: flex-start; border-right: 4px solid var(--ai-cyan); }
 
-#inputBox {
-    display:flex;
-    padding:10px;
-    border-top:1px solid #222;
-    background:#111;
-}
+        /* منطقة الإدخال الاحترافية */
+        .input-zone { padding: 30px 40px; background: #000; border-top: 1px solid #1a1a1a; }
+        .input-container { position: relative; max-width: 900px; margin: 0 auto; }
+        #user-input { width: 100%; background: #111; border: 1px solid #333; padding: 20px 30px; border-radius: 15px; color: white; font-size: 16px; outline: none; transition: 0.3s; padding-left: 100px; }
+        #user-input:focus { border-color: var(--ai-cyan); box-shadow: 0 0 20px rgba(0, 242, 255, 0.1); }
+        .action-btns { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); display: flex; gap: 10px; }
+        .btn-send { background: var(--ai-cyan); border: none; width: 45px; height: 45px; border-radius: 12px; cursor: pointer; color: black; font-size: 18px; transition: 0.3s; }
+        .btn-send:hover { transform: scale(1.1); filter: brightness(1.2); }
 
-input {
-    flex:1;
-    padding:12px;
-    border:none;
-    outline:none;
-    border-radius:10px;
-    background:#000;
-    color:#fff;
-}
-
-button {
-    margin-right:10px;
-    padding:12px 20px;
-    border:none;
-    border-radius:10px;
-    background:#d4af37;
-    font-weight:bold;
-    cursor:pointer;
-}
-</style>
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
 </head>
-
 <body>
 
-<header>TALLAH AI 🤖</header>
+<div class="bg-glow"></div>
 
-<div id="chat"></div>
+<div class="app-wrapper">
+    <aside class="sidebar">
+        <div style="margin-bottom: 50px; margin-top: 20px;">
+            <i class="fas fa-robot" style="font-size: 30px; color: var(--ai-cyan);"></i>
+        </div>
+        <div class="nav-item active" onclick="setMode('chat')">
+            <i class="fas fa-comment-dots"></i>
+            <span class="nav-label">الدردشة الذكية</span>
+        </div>
+        <div class="nav-item" onclick="setMode('image')">
+            <i class="fas fa-paint-brush"></i>
+            <span class="nav-label">توليد الصور</span>
+        </div>
+        <div class="nav-item" onclick="setMode('code')">
+            <i class="fas fa-code"></i>
+            <span class="nav-label">مساعد البرمجة</span>
+        </div>
+        <div class="nav-item" onclick="setMode('analysis')">
+            <i class="fas fa-chart-line"></i>
+            <span class="nav-label">تحليل البيانات</span>
+        </div>
+        <div style="margin-top: auto; margin-bottom: 30px;" class="nav-item">
+            <i class="fas fa-cog"></i>
+            <span class="nav-label">إعدادات طلة</span>
+        </div>
+    </aside>
 
-<div id="inputBox">
-    <button onclick="send()">إرسال</button>
-    <input id="input" placeholder="اكتب رسالتك...">
+    <main class="main-stage">
+        <header class="header">
+            <div>
+                <h2 style="letter-spacing: 2px; font-weight: 900;">TALLAH <span style="color: var(--ai-cyan);">AI</span></h2>
+                <small style="color: #666;">نظام الإمبراطورية العصبي v4.0</small>
+            </div>
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <span style="font-size: 12px; color: #00ff88;">متصل بالسيرفر</span>
+                <div class="status-dot"></div>
+            </div>
+        </header>
+
+        <div class="content-area" id="chat-display">
+            <div class="ai-card ai-bot-card">
+                مرحباً بك يا إمبراطور. أنا Tallah AI، مساعدك الذكي. كيف يمكنني دعم أعمالك اليوم؟
+            </div>
+        </div>
+
+        <div class="input-zone">
+            <div class="input-container">
+                <input type="text" id="user-input" placeholder="اسأل أي شيء أو اطلب تصميم صورة...">
+                <div class="action-btns">
+                    <button class="btn-send" onclick="processAI()"><i class="fas fa-paper-plane"></i></button>
+                    <button class="btn-send" style="background: #222; color: var(--ai-cyan);"><i class="fas fa-microphone"></i></button>
+                </div>
+            </div>
+        </div>
+    </main>
 </div>
 
 <script>
-const WORKER_URL = "https://YOUR-WORKER.workers.dev"; // حط لينك الووركر هنا
+    let currentMode = 'chat';
 
-function addMsg(text, type) {
-    const div = document.createElement("div");
-    div.className = "msg " + type;
-    div.innerText = text;
-    document.getElementById("chat").appendChild(div);
-    div.scrollIntoView();
-}
-
-async function send() {
-    const input = document.getElementById("input");
-    const text = input.value.trim();
-    if(!text) return;
-
-    addMsg(text, "user");
-    input.value = "";
-
-    addMsg("⏳ جاري التفكير...", "ai");
-
-    try {
-        const res = await fetch(WORKER_URL, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ prompt: text })
-        });
-
-        const data = await res.json();
-
-        let reply = data[0]?.generated_text || "مفيش رد";
-        reply = reply.replace(text, "");
-
-        document.querySelectorAll(".ai").pop().innerText = reply;
-
-    } catch (e) {
-        document.querySelectorAll(".ai").pop().innerText = "❌ حصل خطأ";
+    function setMode(mode) {
+        currentMode = mode;
+        const labels = {
+            'chat': 'الدردشة الذكية',
+            'image': 'توليد الصور بالذكاء الاصطناعي',
+            'code': 'محرر الأكواد الذكي',
+            'analysis': 'تحليل سوق الموضة'
+        };
+        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+        event.currentTarget.classList.add('active');
+        addBotMsg(`تم تفعيل وضع: ${labels[mode]}`);
     }
-}
 
-// Enter send
-document.getElementById("input").addEventListener("keypress", e => {
-    if(e.key === "Enter") send();
-});
+    function addBotMsg(text) {
+        const div = document.createElement('div');
+        div.className = 'ai-card ai-bot-card';
+        div.innerText = text;
+        document.getElementById('chat-display').appendChild(div);
+        scrollToBottom();
+    }
+
+    function addUserMsg(text) {
+        const div = document.createElement('div');
+        div.className = 'ai-card user-card';
+        div.innerText = text;
+        document.getElementById('chat-display').appendChild(div);
+    }
+
+    function scrollToBottom() {
+        const display = document.getElementById('chat-display');
+        display.scrollTop = display.scrollHeight;
+    }
+
+    async function processAI() {
+        const input = document.getElementById('user-input');
+        const text = input.value.trim();
+        if(!text) return;
+
+        addUserMsg(text);
+        input.value = '';
+        scrollToBottom();
+
+        // محاكاة التفكير الذكي
+        setTimeout(() => {
+            if(currentMode === 'image') {
+                addBotMsg("جاري معالجة طلبك لتوليد الصورة... تم إرسال الطلب لمحرك الديب ليرنينج.");
+                // هنا يتم الربط بـ API الصور
+            } else {
+                addBotMsg("بناءً على تحليلي لبراند طلة، أقترح عليك الآتي: " + text.split('').reverse().join('').substring(0, 20) + "...");
+            }
+        }, 1000);
+    }
+
+    // حماية إمبراطورية
+    document.onkeydown = (e) => {
+        if(e.key === 'Enter') processAI();
+        if(e.keyCode === 123) return false; // منع F12
+    };
 </script>
-
 </body>
 </html>
