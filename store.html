@@ -3,33 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <script src="https://cdn.tailwindcss.com"></script>
+    <title>إنشاء متجر</title>
 </head>
+
 <body class="bg-blue-900 min-h-screen flex items-center justify-center p-4">
-    <div class="bg-white p-8 rounded-3xl shadow-2xl w-full max-w-md">
-        <h1 class="text-2xl font-bold text-center mb-6">أنشئ متجرك على طلة 🚀</h1>
-        <input type="text" id="sName" placeholder="اسم المتجر" class="w-full p-4 border rounded-xl mb-4 outline-none">
-        <div class="flex items-center border rounded-xl overflow-hidden mb-6">
-            <input type="text" id="sSub" placeholder="my-store" class="w-full p-4 outline-none">
-            <span class="p-4 bg-gray-100 text-gray-400">.talla.com</span>
-        </div>
-        <button onclick="makeStore()" class="w-full bg-blue-600 text-white py-4 rounded-xl font-bold text-lg hover:bg-blue-700 transition">
-            ابدأ الآن ✨
-        </button>
+
+<div class="bg-white p-8 rounded-3xl shadow-2xl w-full max-w-md">
+    <h1 class="text-2xl font-bold text-center mb-6">أنشئ متجرك على طلة 🚀</h1>
+
+    <input type="text" id="sName" placeholder="اسم المتجر"
+           class="w-full p-4 border rounded-xl mb-4 outline-none">
+
+    <div class="flex items-center border rounded-xl overflow-hidden mb-6">
+        <input type="text" id="sSub" placeholder="my-store"
+               class="w-full p-4 outline-none">
+        <span class="p-4 bg-gray-100 text-gray-400">.talla.site</span>
     </div>
-    <script>
-        async function makeStore() {
-            const res = await fetch('http://localhost:3000/api/stores/create', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({
-                    storeName: document.getElementById('sName').value,
-                    subdomain: document.getElementById('sSub').value
-                })
-            });
-            const data = await res.json();
-            if(data.success) alert("تم بنجاح! رابطك: " + data.url);
-            else alert("عذراً، الرابط محجوز");
-        }
-    </script>
+
+    <button onclick="makeStore()"
+            class="w-full bg-blue-600 text-white py-4 rounded-xl font-bold text-lg hover:bg-blue-700 transition">
+        ابدأ الآن ✨
+    </button>
+
+    <p id="result" class="text-center mt-4 text-sm text-green-600"></p>
+</div>
+
+<script>
+function makeStore() {
+    const name = document.getElementById('sName').value.trim();
+    const sub = document.getElementById('sSub').value.trim().toLowerCase();
+
+    if(!name || !sub){
+        alert("املا البيانات الأول");
+        return;
+    }
+
+    // تحميل المتاجر
+    let stores = JSON.parse(localStorage.getItem("stores") || "[]");
+
+    // تحقق لو الاسم محجوز
+    if(stores.find(s => s.sub === sub)){
+        alert("❌ الدومين محجوز");
+        return;
+    }
+
+    // إضافة المتجر
+    const newStore = { name, sub };
+    stores.push(newStore);
+
+    localStorage.setItem("stores", JSON.stringify(stores));
+
+    const url = `https://${sub}.talla.site`;
+
+    document.getElementById('result').innerHTML =
+        `✅ تم إنشاء المتجر<br><a href="${url}" target="_blank" class="text-blue-600">${url}</a>`;
+}
+</script>
+
 </body>
 </html>
