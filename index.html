@@ -2,299 +2,67 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEGM APK | نظام بناء التطبيقات الذكي</title>
-    <!-- استيراد الخطوط والأيقونات -->
+    <title>NEGM APK Builder | نظام البناء</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
-    
     <style>
-        :root {
-            --cyan: #00f2ff;
-            --gold: #d4af37;
-            --bg: #050505;
-            --card: #111;
-            --input: #1a1a1a;
-            --text: #ffffff;
-            --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Cairo', sans-serif; }
-
-        body {
-            background-color: var(--bg);
-            color: var(--text);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 20px;
-            background-image: radial-gradient(circle at top right, #002d30 0%, transparent 40%),
-                              radial-gradient(circle at bottom left, #1a1500 0%, transparent 40%);
-        }
-
-        /* حاوية المشروع */
-        .container {
-            width: 100%;
-            max-width: 600px;
-            background: var(--card);
-            border-radius: 24px;
-            border: 1px solid #222;
-            padding: 40px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .container::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 4px;
-            background: linear-gradient(90deg, var(--cyan), var(--gold));
-        }
-
-        header { text-align: center; margin-bottom: 35px; }
-        header h1 { font-size: 32px; font-weight: 900; letter-spacing: 2px; }
-        header h1 span { color: var(--cyan); }
-        header p { color: #888; font-size: 14px; margin-top: 10px; }
-
-        /* النموذج */
-        .form-group { margin-bottom: 20px; position: relative; }
-        label { display: block; margin-bottom: 8px; font-size: 14px; font-weight: 700; color: #ccc; }
-        
-        .input-wrapper { position: relative; display: flex; align-items: center; }
-        .input-wrapper i { position: absolute; right: 15px; color: var(--cyan); font-size: 18px; }
-
-        input[type="text"], input[type="url"] {
-            width: 100%;
-            padding: 15px 45px 15px 15px;
-            background: var(--input);
-            border: 1px solid #333;
-            border-radius: 12px;
-            color: #fff;
-            font-size: 15px;
-            transition: var(--transition);
-        }
-
-        input:focus { border-color: var(--cyan); box-shadow: 0 0 15px rgba(0, 242, 255, 0.1); outline: none; }
-
-        /* رفع الملفات */
-        .file-upload {
-            border: 2px dashed #333;
-            padding: 20px;
-            border-radius: 12px;
-            text-align: center;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-        .file-upload:hover { border-color: var(--cyan); background: rgba(0, 242, 255, 0.02); }
-        .file-upload i { font-size: 30px; color: var(--gold); margin-bottom: 10px; }
-        #iconInput { display: none; }
-
-        /* الأزرار */
-        .btn-build {
-            width: 100%;
-            padding: 18px;
-            background: var(--cyan);
-            color: #000;
-            border: none;
-            border-radius: 12px;
-            font-size: 18px;
-            font-weight: 900;
-            cursor: pointer;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 10px;
-            transition: var(--transition);
-            margin-top: 10px;
-        }
-
-        .btn-build:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0, 242, 255, 0.3); filter: brightness(1.1); }
-        .btn-build:disabled { background: #333; color: #666; cursor: not-allowed; transform: none; }
-
-        /* حالة المعالجة */
-        .status-box {
-            margin-top: 25px;
-            padding: 20px;
-            border-radius: 12px;
-            background: #000;
-            display: none;
-            border: 1px solid #222;
-        }
-
-        .progress-bar {
-            height: 6px;
-            background: #222;
-            border-radius: 3px;
-            overflow: hidden;
-            margin-top: 15px;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--cyan), #00a2ff);
-            width: 0%;
-            transition: width 0.5s ease;
-        }
-
-        .download-card {
-            margin-top: 20px;
-            padding: 20px;
-            background: rgba(74, 222, 128, 0.1);
-            border: 1px solid #4ade80;
-            border-radius: 12px;
-            display: none;
-            text-align: center;
-            animation: fadeIn 0.5s ease;
-        }
-
-        .btn-download {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            padding: 12px 25px;
-            background: #4ade80;
-            color: #000;
-            text-decoration: none;
-            border-radius: 8px;
-            font-weight: 900;
-            margin-top: 15px;
-        }
-
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* Responsive */
-        @media (max-width: 480px) {
-            .container { padding: 25px; }
-            header h1 { font-size: 26px; }
-        }
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@700;900&display=swap');
+        body { background: #050505; color: white; font-family: 'Cairo', sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        .card { background: #111; padding: 40px; border-radius: 20px; border: 1px solid #222; width: 90%; max-width: 500px; box-shadow: 0 10px 40px rgba(0,0,0,0.8); text-align: center; }
+        h1 { color: #00f2ff; font-weight: 900; margin-bottom: 20px; }
+        input { width: 100%; padding: 15px; margin: 10px 0; background: #000; border: 1px solid #333; color: white; border-radius: 10px; outline: none; }
+        input:focus { border-color: #00f2ff; }
+        button { width: 100%; padding: 15px; background: #00f2ff; border: none; border-radius: 10px; font-weight: 900; cursor: pointer; transition: 0.3s; margin-top: 10px; }
+        button:hover { transform: scale(1.02); filter: brightness(1.1); }
+        #status { margin-top: 20px; font-size: 14px; color: #888; display: none; }
+        .loader { border: 3px solid #1a1a1a; border-top: 3px solid #00f2ff; border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; margin: 10px auto; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .success-btn { background: #4ade80 !important; color: black !important; display: none; text-decoration: none; padding: 15px; border-radius: 10px; font-weight: 900; }
     </style>
 </head>
 <body>
-
-    <div class="container">
-        <header>
-            <h1>NEGM <span>APK</span></h1>
-            <p>نظام تحويل الروابط إلى تطبيقات أندرويد حقيقية</p>
-        </header>
-
-        <div id="formBody">
-            <div class="form-group">
-                <label>رابط الموقع (URL)</label>
-                <div class="input-wrapper">
-                    <i class="fas fa-link"></i>
-                    <input type="url" id="appUrl" placeholder="https://example.com" required>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label>اسم التطبيق</label>
-                <div class="input-wrapper">
-                    <i class="fas fa-mobile-alt"></i>
-                    <input type="text" id="appName" placeholder="مثلاً: متجر طلة" required>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label>أيقونة التطبيق (PNG/JPG)</label>
-                <label for="iconInput" class="file-upload">
-                    <i class="fas fa-cloud-upload-alt"></i>
-                    <p id="fileName">اضغط لرفع الأيقونة</p>
-                    <input type="file" id="iconInput" accept="image/*">
-                </label>
-            </div>
-
-            <button class="btn-build" id="buildBtn" onclick="initiateBuild()">
-                <i class="fas fa-hammer"></i> إنشاء ملف APK
-            </button>
+    <div class="card">
+        <h1>NEGM <span style="color:white">APK</span></h1>
+        <p>حول أي موقع لتطبيق أندرويد حقيقي</p>
+        <input type="url" id="appUrl" placeholder="رابط الموقع (https://...)">
+        <input type="text" id="appName" placeholder="اسم التطبيق">
+        <button id="mainBtn" onclick="buildApp()">إنشاء التطبيق الآن</button>
+        
+        <div id="status">
+            <div class="loader"></div>
+            <p id="statusMsg">جاري بناء التطبيق... قد يستغرق دقيقتين</p>
         </div>
 
-        <div class="status-box" id="statusBox">
-            <p id="statusText" style="font-size: 14px;"></p>
-            <div class="progress-bar">
-                <div class="progress-fill" id="progressFill"></div>
-            </div>
-        </div>
-
-        <div class="download-card" id="downloadCard">
-            <i class="fas fa-check-circle" style="color: #4ade80; font-size: 40px;"></i>
-            <h3 style="margin-top: 10px;">اكتمل بناء التطبيق!</h3>
-            <p style="font-size: 13px; color: #ccc; margin-top: 5px;">تطبيقك الآن جاهز للتثبيت على هواتف أندرويد.</p>
-            <a href="#" class="btn-download" id="finalDownloadLink" download>
-                <i class="fas fa-download"></i> تحميل ملف APK
-            </a>
-        </div>
+        <a id="downloadLink" class="success-btn" href="#">📥 تحميل ملف APK</a>
     </div>
 
     <script>
-        // تغيير اسم الملف عند الرفع
-        document.getElementById('iconInput').onchange = function() {
-            document.getElementById('fileName').innerText = this.files[0].name;
-            document.getElementById('fileName').style.color = 'var(--cyan)';
-        };
-
-        async function initiateBuild() {
+        async function buildApp() {
             const url = document.getElementById('appUrl').value;
             const name = document.getElementById('appName').value;
-            const icon = document.getElementById('iconInput').files[0];
-            const buildBtn = document.getElementById('buildBtn');
-            const statusBox = document.getElementById('statusBox');
-            const progressFill = document.getElementById('progressFill');
-            const statusText = document.getElementById('statusText');
+            if(!url || !name) return alert("املا البيانات يا ملك");
 
-            if(!url || !name) {
-                alert("برجاء ملء كافة الحقول الأساسية يا ملك.");
-                return;
-            }
-
-            // تفعيل واجهة البناء
-            buildBtn.disabled = true;
-            statusBox.style.display = 'block';
-            updateProgress(20, "جاري تهيئة بيئة بناء Capacitor...");
-
-            const formData = new FormData();
-            formData.append('url', url);
-            formData.append('appName', name);
-            if(icon) formData.append('icon', icon);
+            document.getElementById('mainBtn').style.display = 'none';
+            document.getElementById('status').style.display = 'block';
 
             try {
-                // ملاحظة: استبدل الرابط أدناه برابط سيرفر الـ Backend الخاص بك
-                const response = await fetch('/build-apk', {
+                const res = await fetch('/generate-apk', {
                     method: 'POST',
-                    body: formData
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ url, name })
                 });
-
-                updateProgress(50, "جاري حقن الـ WebView وتوليد أكواد Java...");
+                const data = await res.json();
                 
-                // محاكاة للوقت الذي يستغرقه الـ Build (في الحقيقي يعتمد على استجابة السيرفر)
-                setTimeout(() => updateProgress(80, "جاري تجميع ملف الـ APK (Gradle Assemble)..."), 3000);
-
-                const data = await response.json();
-
-                if (data.downloadUrl) {
-                    updateProgress(100, "تم التجميع بنجاح!");
-                    setTimeout(() => {
-                        statusBox.style.display = 'none';
-                        document.getElementById('formBody').style.opacity = '0.3';
-                        document.getElementById('formBody').style.pointerEvents = 'none';
-                        document.getElementById('downloadCard').style.display = 'block';
-                        document.getElementById('finalDownloadLink').href = data.downloadUrl;
-                    }, 1000);
+                if(data.downloadUrl) {
+                    document.getElementById('status').style.display = 'none';
+                    const dl = document.getElementById('downloadLink');
+                    dl.href = data.downloadUrl;
+                    dl.style.display = 'block';
                 } else {
-                    throw new Error("فشل في السيرفر");
+                    alert("فشل البناء: " + data.error);
                 }
-
-            } catch (error) {
-                statusText.innerText = "❌ حدث خطأ في السيرفر. تأكد من تثبيت Android SDK.";
-                statusText.style.color = "#ff4b4b";
-                buildBtn.disabled = false;
+            } catch (e) {
+                alert("السيرفر لا يستجيب. تأكد من تشغيل الـ Backend");
             }
-        }
-
-        function updateProgress(percent, text) {
-            document.getElementById('progressFill').style.width = percent + '%';
-            document.getElementById('statusText').innerText = text;
         }
     </script>
 </body>
