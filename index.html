@@ -3,174 +3,105 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TALLAH OMNI-SYSTEM | الإمبراطورية الذكية</title>
-    
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
+    <title>TALLAH AI | العقل العصبي</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap');
-        :root { --gold: #d4af37; --cyan: #00f2ff; --bg: #020202; --card: #0d0d0d; }
+        :root { --gold: #d4af37; --cyan: #00f2ff; --bg: #050505; }
+        body { background: var(--bg); color: white; font-family: 'Cairo', sans-serif; margin: 0; height: 100vh; display: flex; flex-direction: column; }
         
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Cairo', sans-serif; }
-        body { background: var(--bg); color: white; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+        /* تصميم الهيدر من وحي صورك */
+        header { padding: 15px; text-align: center; border-bottom: 1px solid #1a1a1a; background: #000; position: relative; }
+        .logo-text { font-weight: 900; font-size: 22px; color: var(--cyan); letter-spacing: 1px; }
+        .server-status { position: absolute; right: 20px; top: 50%; transform: translateY(-50%); color: #00ff88; font-size: 12px; display: flex; align-items: center; gap: 5px; }
+        .dot { width: 8px; height: 8px; background: #00ff88; border-radius: 50%; box-shadow: 0 0 8px #00ff88; }
 
-        /* الهيدر الملكي */
-        header { padding: 15px 25px; background: #000; border-bottom: 2px solid var(--gold); display: flex; justify-content: space-between; align-items: center; z-index: 100; }
-        .logo { font-size: 24px; font-weight: 900; color: var(--gold); letter-spacing: 2px; }
-        .status { font-size: 12px; color: #00ff88; display: flex; align-items: center; gap: 8px; }
-        .status-dot { width: 8px; height: 8px; background: #00ff88; border-radius: 50%; box-shadow: 0 0 10px #00ff88; }
+        /* منطقة الدردشة الإمبراطورية */
+        #chat-box { flex: 1; overflow-y: auto; padding: 25px; display: flex; flex-direction: column; gap: 15px; }
+        .msg { max-width: 80%; padding: 15px 20px; border-radius: 18px; line-height: 1.7; font-size: 15px; position: relative; }
+        .user { align-self: flex-start; background: var(--cyan); color: #000; font-weight: bold; border-bottom-left-radius: 2px; }
+        .ai { align-self: flex-end; background: #111; border: 1px solid #222; border-right: 4px solid var(--gold); border-bottom-right-radius: 2px; }
 
-        /* منطقة المحتوى */
-        .container { flex: 1; display: flex; overflow: hidden; }
-
-        /* القائمة الجانبية (الأدوات) */
-        aside { width: 260px; background: #050505; border-left: 1px solid #1a1a1a; padding: 20px; overflow-y: auto; }
-        .tool-link { padding: 12px; margin-bottom: 8px; border-radius: 10px; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 12px; font-size: 14px; border: 1px solid transparent; }
-        .tool-link:hover { background: rgba(212, 175, 55, 0.1); border-color: var(--gold); }
-        .tool-link i { color: var(--gold); width: 20px; }
-
-        /* منطقة العمل (الـ AI والدردشة) */
-        main { flex: 1; display: flex; flex-direction: column; background: radial-gradient(circle at center, #111 0%, #000 100%); position: relative; }
-        #chat-display { flex: 1; overflow-y: auto; padding: 30px; display: flex; flex-direction: column; gap: 20px; }
-        .msg { max-width: 80%; padding: 15px 20px; border-radius: 20px; line-height: 1.6; font-size: 15px; animation: fadeInUp 0.4s ease; }
-        .user-msg { align-self: flex-end; background: var(--gold); color: black; font-weight: bold; border-bottom-right-radius: 2px; }
-        .ai-msg { align-self: flex-start; background: #1a1a1a; border-right: 4px solid var(--cyan); border-bottom-left-radius: 2px; }
-        .ai-img { width: 100%; max-width: 400px; border-radius: 15px; margin-top: 10px; border: 1px solid var(--gold); }
-
-        /* منطقة الإدخال */
-        .input-box { padding: 25px; background: #000; border-top: 1px solid #1a1a1a; }
-        .input-wrapper { display: flex; gap: 15px; max-width: 900px; margin: 0 auto; position: relative; }
-        input { flex: 1; background: #111; border: 1px solid #333; padding: 15px 25px; border-radius: 15px; color: white; outline: none; transition: 0.3s; }
+        /* منطقة الإدخال الاحترافية */
+        .input-container { padding: 20px; background: #000; border-top: 1px solid #1a1a1a; display: flex; gap: 12px; }
+        input { flex: 1; background: #111; border: 1px solid #333; padding: 15px; border-radius: 12px; color: white; outline: none; transition: 0.3s; }
         input:focus { border-color: var(--cyan); box-shadow: 0 0 15px rgba(0, 242, 255, 0.1); }
-        .btn-send { background: var(--gold); border: none; width: 50px; height: 50px; border-radius: 12px; cursor: pointer; font-size: 20px; transition: 0.3s; }
-        .btn-send:hover { transform: scale(1.05); filter: brightness(1.2); }
+        .btn { background: var(--cyan); border: none; padding: 0 20px; border-radius: 12px; cursor: pointer; color: black; font-weight: bold; }
 
-        /* لودنج جاري التفكير */
-        #thinking { position: absolute; top: -30px; right: 30px; font-size: 12px; color: var(--cyan); display: none; }
-
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        #thinking { color: var(--gold); font-size: 11px; text-align: center; display: none; padding: 5px; }
     </style>
 </head>
-<body oncontextmenu="return false;">
+<body>
 
 <header>
-    <div class="logo">TALLAH <span style="color:white">EMPIRE</span></div>
-    <div class="status">
-        <span>الملك متصل الآن</span>
-        <div class="status-dot"></div>
-    </div>
+    <div class="logo-text">TALLAH <span style="color:white">AI</span></div>
+    <div class="server-status">متصل بالسيرفر <div class="dot"></div></div>
 </header>
 
-<div class="container">
-    <aside>
-        <div style="color:gray; font-size:11px; margin-bottom:15px; letter-spacing:1px;">أدوات الإمبراطورية</div>
-        <div class="tool-link" onclick="setMode('chat')"><i class="fas fa-robot"></i> الدردشة الذكية</div>
-        <div class="tool-link" onclick="setMode('image')"><i class="fas fa-paint-brush"></i> توليد صور أزياء</div>
-        <div class="tool-link"><i class="fas fa-tshirt"></i> متجر الملابس</div>
-        <div class="tool-link"><i class="fas fa-code"></i> مساعد البرمجة</div>
-        <div class="tool-link"><i class="fas fa-chart-pie"></i> تحليل السوق</div>
-        <div class="tool-link" style="margin-top:20px; border-top:1px solid #222; padding-top:20px;"><i class="fas fa-shield-alt"></i> لوحة الأدمن</div>
-    </aside>
+<div id="chat-box">
+    <div class="msg ai">مرحباً بك يا إمبراطور طلة. تم تحديث الـ Token بنجاح. أنا الآن متصل بمحرك Cloudflare وجاهز لأوامرك.</div>
+</div>
 
-    <main>
-        <div id="chat-display">
-            <div class="msg ai-msg">مرحباً بك يا إمبراطور. نظام TALLAH AI جاهز للعمل بمفتاح Hugging Face. ماذا سنصنع اليوم؟</div>
-        </div>
+<div id="thinking">جاري معالجة البيانات في عقل الإمبراطورية...</div>
 
-        <div class="input-box">
-            <div class="input-wrapper">
-                <div id="thinking">جاري التفكير يا ملك...</div>
-                <input type="text" id="userInput" placeholder="اسأل أي شيء أو اطلب تصميم موديل...">
-                <button class="btn-send" onclick="handleAI()"><i class="fas fa-paper-plane"></i></button>
-            </div>
-        </div>
-    </main>
+<div class="input-container">
+    <input type="text" id="userInput" placeholder="اكتب رسالتك للملك...">
+    <button class="btn" onclick="askAI()">إرسال</button>
 </div>
 
 <script>
-    // المفتاح الخاص بك من Hugging Face
-    const HF_TOKEN = "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";
-    let mode = 'chat'; 
+    // بياناتك الجديدة اللي بعتها الآن
+    const CF_TOKEN = "cfut_zt6wqYqCxAWReGyR0ITOdwGcU175oXdYDIoDfYiZ375adfab";
+    const ACCOUNT_ID = "Vb4wU8bjlYi0iDFbnTQ4k5Ta0c8bOVUxLI3Azf2K344a167a";
 
-    function setMode(newMode) {
-        mode = newMode;
-        appendMsg(`تم التحول إلى وضع: ${mode === 'chat' ? 'الدردشة' : 'توليد الصور'}`, 'ai');
-    }
-
-    async function handleAI() {
+    async function askAI() {
         const input = document.getElementById('userInput');
         const text = input.value.trim();
         if (!text) return;
 
-        appendMsg(text, 'user-msg');
+        appendMsg(text, 'user');
         input.value = '';
         document.getElementById('thinking').style.display = 'block';
 
-        if (mode === 'image' || text.includes('صورة') || text.includes('تصميم')) {
-            await generateImage(text);
-        } else {
-            await chatWithAI(text);
-        }
-        document.getElementById('thinking').style.display = 'none';
-    }
-
-    // محرك الدردشة (Mistral-7B)
-    async function chatWithAI(prompt) {
         try {
-            const response = await fetch("https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.2", {
-                headers: { Authorization: `Bearer ${HF_TOKEN}`, "Content-Type": "application/json" },
-                method: "POST",
-                body: JSON.stringify({ inputs: `<s>[INST] أنت مساعد إمبراطور براند طلة للأزياء. رد باختصار وقوة: ${prompt} [/INST]` }),
-            });
-            const result = await response.json();
-            let aiRes = result[0].generated_text.split('[/INST]')[1] || result[0].generated_text;
-            appendMsg(aiRes, 'ai-msg');
+            const response = await fetch(
+                `https://api.cloudflare.com/client/v4/accounts/${ACCOUNT_ID}/ai/run/@cf/meta/llama-3-8b-instruct`,
+                {
+                    method: "POST",
+                    headers: { "Authorization": `Bearer ${CF_TOKEN}` },
+                    body: JSON.stringify({
+                        messages: [
+                            { role: "system", content: "أنت المساعد الذكي لإمبراطورية طلة للأزياء. ردودك يجب أن تكون قوية، احترافية، وتدعم البيزنس." },
+                            { role: "user", content: text }
+                        ]
+                    })
+                }
+            );
+
+            const data = await response.json();
+            if (data.success) {
+                appendMsg(data.result.response, 'ai');
+            } else {
+                appendMsg("يا ملك، الـ Token محتاج تفعيل صلاحيات Workers AI من لوحة Cloudflare.", 'ai');
+            }
+
         } catch (e) {
-            appendMsg("خطأ في الاتصال بالسيرفر يا ملك.", 'ai-msg');
+            appendMsg("خطأ في الربط العصبوني.. تأكد من اتصال الإنترنت.", 'ai');
+        } finally {
+            document.getElementById('thinking').style.display = 'none';
         }
     }
 
-    // محرك الصور (Stable Diffusion XL)
-    async function generateImage(prompt) {
-        try {
-            const response = await fetch("https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-xl-base-1.0", {
-                headers: { Authorization: `Bearer ${HF_TOKEN}` },
-                method: "POST",
-                body: JSON.stringify({ inputs: `High-end fashion photography, Tallah brand style, luxury model wearing ${prompt}, 8k, cinematic lighting` }),
-            });
-            const blob = await response.blob();
-            const url = URL.createObjectURL(blob);
-            appendImg(url);
-        } catch (e) {
-            appendMsg("فشل توليد الصورة، حاول مرة أخرى.", 'ai-msg');
-        }
+    function appendMsg(t, type) {
+        const b = document.getElementById('chat-box');
+        const d = document.createElement('div');
+        d.className = `msg ${type}`;
+        d.innerText = t;
+        b.appendChild(d);
+        b.scrollTop = b.scrollHeight;
     }
 
-    function appendMsg(text, className) {
-        const chat = document.getElementById('chat-display');
-        const div = document.createElement('div');
-        div.className = `msg ${className}`;
-        div.innerText = text;
-        chat.appendChild(div);
-        chat.scrollTop = chat.scrollHeight;
-    }
-
-    function appendImg(url) {
-        const chat = document.getElementById('chat-display');
-        const img = document.createElement('img');
-        img.src = url;
-        img.className = 'ai-img';
-        chat.appendChild(img);
-        chat.scrollTop = chat.scrollHeight;
-    }
-
-    // اختصارات الكيبورد
-    document.getElementById('userInput').addEventListener('keypress', (e) => {
-        if(e.key === 'Enter') handleAI();
-    });
+    document.getElementById('userInput').addEventListener('keypress', (e) => { if(e.key === 'Enter') askAI(); });
 </script>
-
 </body>
 </html>
