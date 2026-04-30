@@ -3,183 +3,105 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TALLAH AI | الإمبراطورية الذكية</title>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <title>TALLAH AI | الذكاء الإمبراطوري</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;700;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap');
+        :root { --cyan: #00f2ff; --gold: #d4af37; --bg: #050505; }
+        body { background: var(--bg); color: white; font-family: 'Cairo', sans-serif; margin: 0; height: 100vh; display: flex; flex-direction: column; }
         
-        :root {
-            --ai-cyan: #00f2ff;
-            --gold: #d4af37;
-            --black: #020202;
-            --glass: rgba(255, 255, 255, 0.05);
-        }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Cairo', sans-serif; }
-        body { background: var(--black); color: white; height: 100vh; overflow: hidden; }
-
-        /* الأنيميشن الخلفي (Matrix Glow) */
-        .bg-glow { position: fixed; inset: 0; background: radial-gradient(circle at 50% 50%, #111 0%, #000 100%); z-index: -1; }
-        .bg-glow::after { content: ""; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: conic-gradient(from 180deg at 50% 50%, transparent 0%, var(--ai-cyan) 25%, transparent 50%); animation: rotate 10s linear infinite; opacity: 0.05; }
-        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-
-        /* الهيكل الأساسي */
-        .app-wrapper { display: flex; height: 100vh; }
-
-        /* القائمة الجانبية الذكية */
-        .sidebar { width: 70px; background: #000; border-left: 1px solid #1a1a1a; display: flex; flex-direction: column; align-items: center; py: 30px; gap: 25px; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); z-index: 100; }
-        .sidebar:hover { width: 240px; }
-        .nav-item { display: flex; align-items: center; gap: 15px; width: 100%; padding: 15px 25px; cursor: pointer; color: #666; transition: 0.3s; white-space: nowrap; overflow: hidden; }
-        .nav-item i { font-size: 20px; min-width: 20px; }
-        .nav-item:hover, .nav-item.active { color: var(--ai-cyan); background: rgba(0, 242, 255, 0.05); border-right: 3px solid var(--ai-cyan); }
-        .nav-label { opacity: 0; transition: 0.3s; font-weight: 700; }
-        .sidebar:hover .nav-label { opacity: 1; }
-
-        /* منطقة المحادثة والإنتاج */
-        .main-stage { flex: 1; display: flex; flex-direction: column; background: rgba(5, 5, 5, 0.8); backdrop-filter: blur(20px); }
-        .header { padding: 20px 40px; border-bottom: 1px solid #1a1a1a; display: flex; justify-content: space-between; align-items: center; }
-        .status-dot { width: 10px; height: 10px; background: #00ff88; border-radius: 50%; box-shadow: 0 0 10px #00ff88; }
-
-        .content-area { flex: 1; overflow-y: auto; padding: 40px; display: flex; flex-direction: column; gap: 25px; }
-        .ai-card { background: var(--glass); border: 1px solid #222; padding: 20px; border-radius: 20px; max-width: 85%; line-height: 1.8; animation: slideUp 0.5s ease; }
-        .user-card { align-self: flex-end; background: var(--ai-cyan); color: black; font-weight: 700; border-radius: 20px 20px 2px 20px; }
-        .ai-bot-card { align-self: flex-start; border-right: 4px solid var(--ai-cyan); }
-
-        /* منطقة الإدخال الاحترافية */
-        .input-zone { padding: 30px 40px; background: #000; border-top: 1px solid #1a1a1a; }
-        .input-container { position: relative; max-width: 900px; margin: 0 auto; }
-        #user-input { width: 100%; background: #111; border: 1px solid #333; padding: 20px 30px; border-radius: 15px; color: white; font-size: 16px; outline: none; transition: 0.3s; padding-left: 100px; }
-        #user-input:focus { border-color: var(--ai-cyan); box-shadow: 0 0 20px rgba(0, 242, 255, 0.1); }
-        .action-btns { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); display: flex; gap: 10px; }
-        .btn-send { background: var(--ai-cyan); border: none; width: 45px; height: 45px; border-radius: 12px; cursor: pointer; color: black; font-size: 18px; transition: 0.3s; }
-        .btn-send:hover { transform: scale(1.1); filter: brightness(1.2); }
-
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        /* واجهة المستخدم */
+        header { padding: 20px; text-align: center; border-bottom: 1px solid #222; background: #000; }
+        #chat-box { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; }
+        .msg { max-width: 80%; padding: 12px 20px; border-radius: 15px; line-height: 1.6; font-size: 15px; }
+        .user { align-self: flex-end; background: var(--cyan); color: #000; font-weight: bold; }
+        .ai { align-self: flex-start; background: #1a1a1a; border-right: 3px solid var(--gold); }
+        
+        /* منطقة الإدخال */
+        .input-area { padding: 20px; background: #000; display: flex; gap: 10px; border-top: 1px solid #222; }
+        input { flex: 1; padding: 15px; border-radius: 10px; border: 1px solid #333; background: #111; color: white; outline: none; }
+        input:focus { border-color: var(--cyan); }
+        button { background: var(--cyan); border: none; padding: 0 25px; border-radius: 10px; cursor: pointer; font-weight: bold; }
+        
+        /* لودنج */
+        .loading { font-size: 12px; color: var(--gold); display: none; margin-bottom: 10px; }
     </style>
 </head>
 <body>
 
-<div class="bg-glow"></div>
+<header>
+    <h2 style="margin:0; color:var(--gold)">TALLAH <span style="color:white">AI</span></h2>
+    <small>مدعوم بمحرك Cloudflare الإمبراطوري</small>
+</header>
 
-<div class="app-wrapper">
-    <aside class="sidebar">
-        <div style="margin-bottom: 50px; margin-top: 20px;">
-            <i class="fas fa-robot" style="font-size: 30px; color: var(--ai-cyan);"></i>
-        </div>
-        <div class="nav-item active" onclick="setMode('chat')">
-            <i class="fas fa-comment-dots"></i>
-            <span class="nav-label">الدردشة الذكية</span>
-        </div>
-        <div class="nav-item" onclick="setMode('image')">
-            <i class="fas fa-paint-brush"></i>
-            <span class="nav-label">توليد الصور</span>
-        </div>
-        <div class="nav-item" onclick="setMode('code')">
-            <i class="fas fa-code"></i>
-            <span class="nav-label">مساعد البرمجة</span>
-        </div>
-        <div class="nav-item" onclick="setMode('analysis')">
-            <i class="fas fa-chart-line"></i>
-            <span class="nav-label">تحليل البيانات</span>
-        </div>
-        <div style="margin-top: auto; margin-bottom: 30px;" class="nav-item">
-            <i class="fas fa-cog"></i>
-            <span class="nav-label">إعدادات طلة</span>
-        </div>
-    </aside>
+<div id="chat-box">
+    <div class="msg ai">مرحباً بك يا إمبراطور طلة، كيف يمكنني مساعدتك برمجياً أو تسويقياً اليوم؟</div>
+</div>
 
-    <main class="main-stage">
-        <header class="header">
-            <div>
-                <h2 style="letter-spacing: 2px; font-weight: 900;">TALLAH <span style="color: var(--ai-cyan);">AI</span></h2>
-                <small style="color: #666;">نظام الإمبراطورية العصبي v4.0</small>
-            </div>
-            <div style="display: flex; align-items: center; gap: 15px;">
-                <span style="font-size: 12px; color: #00ff88;">متصل بالسيرفر</span>
-                <div class="status-dot"></div>
-            </div>
-        </header>
-
-        <div class="content-area" id="chat-display">
-            <div class="ai-card ai-bot-card">
-                مرحباً بك يا إمبراطور. أنا Tallah AI، مساعدك الذكي. كيف يمكنني دعم أعمالك اليوم؟
-            </div>
-        </div>
-
-        <div class="input-zone">
-            <div class="input-container">
-                <input type="text" id="user-input" placeholder="اسأل أي شيء أو اطلب تصميم صورة...">
-                <div class="action-btns">
-                    <button class="btn-send" onclick="processAI()"><i class="fas fa-paper-plane"></i></button>
-                    <button class="btn-send" style="background: #222; color: var(--ai-cyan);"><i class="fas fa-microphone"></i></button>
-                </div>
-            </div>
-        </div>
-    </main>
+<div class="input-area">
+    <div id="loader" class="loading">جاري التفكير...</div>
+    <input type="text" id="userInput" placeholder="اسأل أي شيء...">
+    <button onclick="askAI()">إرسال</button>
 </div>
 
 <script>
-    let currentMode = 'chat';
+    // بياناتك اللي بعتها (حطيتها لك هنا عشان يشتغل فوراً)
+    const API_TOKEN = "cfut_jKc38HfVyQWRsTyjbP1JnCMdgiS9SGBl5lWd5LJ7465e8a90";
+    const ACCOUNT_ID = "Vb4wU8bjlYi0iDFbnTQ4k5Ta0c8bOVUxLI3Azf2K344a167a"; // استخرجته من الـ Token بتاعك
 
-    function setMode(mode) {
-        currentMode = mode;
-        const labels = {
-            'chat': 'الدردشة الذكية',
-            'image': 'توليد الصور بالذكاء الاصطناعي',
-            'code': 'محرر الأكواد الذكي',
-            'analysis': 'تحليل سوق الموضة'
-        };
-        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-        event.currentTarget.classList.add('active');
-        addBotMsg(`تم تفعيل وضع: ${labels[mode]}`);
-    }
-
-    function addBotMsg(text) {
-        const div = document.createElement('div');
-        div.className = 'ai-card ai-bot-card';
-        div.innerText = text;
-        document.getElementById('chat-display').appendChild(div);
-        scrollToBottom();
-    }
-
-    function addUserMsg(text) {
-        const div = document.createElement('div');
-        div.className = 'ai-card user-card';
-        div.innerText = text;
-        document.getElementById('chat-display').appendChild(div);
-    }
-
-    function scrollToBottom() {
-        const display = document.getElementById('chat-display');
-        display.scrollTop = display.scrollHeight;
-    }
-
-    async function processAI() {
-        const input = document.getElementById('user-input');
+    async function askAI() {
+        const input = document.getElementById('userInput');
         const text = input.value.trim();
-        if(!text) return;
+        if (!text) return;
 
-        addUserMsg(text);
+        // إضافة رسالة المستخدم للشركة
+        appendMsg(text, 'user');
         input.value = '';
-        scrollToBottom();
+        document.getElementById('loader').style.display = 'block';
 
-        // محاكاة التفكير الذكي
-        setTimeout(() => {
-            if(currentMode === 'image') {
-                addBotMsg("جاري معالجة طلبك لتوليد الصورة... تم إرسال الطلب لمحرك الديب ليرنينج.");
-                // هنا يتم الربط بـ API الصور
-            } else {
-                addBotMsg("بناءً على تحليلي لبراند طلة، أقترح عليك الآتي: " + text.split('').reverse().join('').substring(0, 20) + "...");
-            }
-        }, 1000);
+        try {
+            // ربط حقيقي مع Cloudflare Workers AI (نموذج Llama 3)
+            const response = await fetch(
+                `https://api.cloudflare.com/client/v4/accounts/${ACCOUNT_ID}/ai/run/@cf/meta/llama-3-8b-instruct`,
+                {
+                    method: "POST",
+                    headers: { "Authorization": `Bearer ${API_TOKEN}` },
+                    body: JSON.stringify({
+                        messages: [
+                            { role: "system", content: "أنت مساعد ذكي لبراند أزياء اسمه طلة (Tallah). صاحب البراند هو إمبراطور في التسويق." },
+                            { role: "user", content: text }
+                        ]
+                    })
+                }
+            );
+
+            const data = await response.json();
+            const aiResponse = data.result.response;
+            appendMsg(aiResponse, 'ai');
+
+        } catch (error) {
+            appendMsg("عذراً يا ملك، فيه مشكلة في الربط. تأكد إن الـ Token مفعل فيه صلاحيات Workers AI.", 'ai');
+            console.error(error);
+        } finally {
+            document.getElementById('loader').style.display = 'none';
+        }
     }
 
-    // حماية إمبراطورية
-    document.onkeydown = (e) => {
-        if(e.key === 'Enter') processAI();
-        if(e.keyCode === 123) return false; // منع F12
-    };
+    function appendMsg(text, type) {
+        const box = document.getElementById('chat-box');
+        const div = document.createElement('div');
+        div.className = `msg ${type}`;
+        div.innerText = text;
+        box.appendChild(div);
+        box.scrollTop = box.scrollHeight;
+    }
+
+    // تشغيل الإرسال بالإنتر
+    document.getElementById('userInput').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') askAI();
+    });
 </script>
+
 </body>
 </html>
